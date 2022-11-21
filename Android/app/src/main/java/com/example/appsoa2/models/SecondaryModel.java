@@ -32,7 +32,6 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     public static final int FULL_VALUE_COLOR = 255;
     public static final int EMPTY_VALUE_COLOR = 0;
     public static final String SENSOR_SERVICE = "sensor";
-    private int savedColor = 0;
     private final int RED_COLOR = 3;
     private final int GREEN_COLOR = 4;
     private final int BLUE_COLOR = 5;
@@ -40,7 +39,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private final int RANDOM_COLOR_OPERATION_VALUE = 4;
     private final int RANDOM_COLOR_OPERATION_VALUE_OFFSET = 3;
     private final String EOF_SE = "#";
-    // Sensors
+
     private SensorManager sensorManager;
     private Sensor sensorAccelerometer;
     private static final float SHAKE_THRESHOLD = 5f;
@@ -50,7 +49,6 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private Vibrator vibratorObj;
     private final int VIBRATOR_DURATION = 500;
 
-    // Bluetooth
     private SecondaryModel.ConnectedThread mConnectedThread;
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -70,11 +68,9 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         currentPositionZ = sensorEvent.values[2];
 
         if (notFirstMove) {
-
             xDiff = Math.abs(lastPositionX - currentPositionX);
             yDiff = Math.abs(lastPositionY - currentPositionY);
             zDiff = Math.abs(lastPositionZ - currentPositionZ);
-
             if ((xDiff > SHAKE_THRESHOLD && yDiff > SHAKE_THRESHOLD) || (yDiff > SHAKE_THRESHOLD && zDiff > SHAKE_THRESHOLD) || (xDiff > SHAKE_THRESHOLD && zDiff > SHAKE_THRESHOLD)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibratorObj.vibrate(VibrationEffect.createOneShot(VIBRATOR_DURATION, VibrationEffect.DEFAULT_AMPLITUDE));
@@ -83,7 +79,6 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
                 }
                 generateColor(presenter);
             }
-
         }
         lastPositionX = currentPositionX;
         lastPositionY = currentPositionY;
@@ -152,9 +147,6 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             default:
                 resultColor = Color.argb(ALPHA, EMPTY_VALUE_COLOR, EMPTY_VALUE_COLOR, EMPTY_VALUE_COLOR);
         }
-
-        this.savedColor = codeColor;
-        Log.i(TAG, "Enviar al SE el color a setear para el led RGB. Valor de color: " + resultColor);
         presenter.handleShakerResult(resultColor, codeColor);
     }
 
@@ -179,7 +171,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) {
-                Log.i(TAG, "Error al mandar datos al SE: " + e);
+                Log.i(TAG, "Excepcion: Al mandar datos al SE: " + e);
             }
         }
     }
@@ -195,6 +187,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 socketResult.close();
             } catch (IOException c) {
+                Log.i(TAG, "Excepcion  " + e);
                 return socketResult;
             }
         }

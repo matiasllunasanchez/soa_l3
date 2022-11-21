@@ -23,7 +23,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
 
     private BluetoothDevice primaryDevice = null;
     private BluetoothAdapter mBluetoothAdapter;
-    private static final int MULTIPLE_PERMISSIONS = 10; // code you want.
+    private static final int MULTIPLE_PERMISSIONS = 10;
     private MainActivityContract.ModelMVP.OnSendToPresenter currentPresenter = null;
     private Context currentContext = null;
 
@@ -36,8 +36,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
 
-     private static String MAC_ADDRESS_DEVICE = "00:21:06:BE:58:58"; // REAL DEVICE - CORTINA HC-05
-    // private static String MAC_ADDRESS_DEVICE = "14:08:13:06:51:24"; // TEST  - MIBAND DEVICE
+    private static String MAC_ADDRESS_DEVICE = "00:21:06:BE:58:58"; // REAL DEVICE - CORTINA HC-05
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -71,14 +70,11 @@ public class MainModel implements MainActivityContract.ModelMVP {
     @Override
     public void onResumeProcess() {
         if (primaryDevice == null) {
-            // Tengo el device conectado?
             if (mBluetoothAdapter == null) {
-                // Tengo el bluetooth prendido?
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             }
             enableComponent();
         }
-        // Sino, aviso. Podria intentar conectarlo pero con avisar y entrar conetado ta bien.
     }
 
     @Override
@@ -101,16 +97,10 @@ public class MainModel implements MainActivityContract.ModelMVP {
         return this.primaryDevice.getAddress();
     }
 
-    @Override
-    public void processDataGetResult(OnSendToPresenter presenter) {
-
-    }
-
     private boolean checkPermissions() {
         int result;
         List<String> listPermissionsNeeded = new ArrayList<>();
 
-        //Se chequea si la version de Android es menor a la 6
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
@@ -133,19 +123,21 @@ public class MainModel implements MainActivityContract.ModelMVP {
 
         if (mBluetoothAdapter == null) {
             response = "Bluetooth no es soportado por el dispositivo movil";
+            this.currentPresenter.showOnLabel(response);
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 response = "Bluetooth ya encendido!!";
+                this.currentPresenter.consoleLog(response,"");
                 if (!primaryDeviceIsAlreadyConnected()) {
                     searchBluetoothDevices();
                 }
             } else {
                 response = "Bluetooth apagado... Necesitas encenderlo!";
+                this.currentPresenter.showOnToast(response);
                 this.currentPresenter.askBTPermission();
             }
         }
-        this.currentPresenter.showOnToast(response);
-        this.currentPresenter.showOnLabel(response);
+
     }
 
     private void initializeBroadcastReceiver(Context context) {
@@ -156,7 +148,6 @@ public class MainModel implements MainActivityContract.ModelMVP {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED); // Cuando se comienza una busqueda de bluethoot
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED); // Cuando la busqueda de bluethoot finaliza
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED); // Cuando se empareja o desempareja el bluethoot
-        // Se define (registra) el handler que captura los broadcast anterirmente mencionados.
         context.registerReceiver(mReceiver, filter);
     }
 
@@ -167,74 +158,44 @@ public class MainModel implements MainActivityContract.ModelMVP {
     private void handleBluetoothEvent(Intent intent, String action) {
         String response = null;
         if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-            // Cambio el estado del bluetooth
-            //Obtengo el parametro, aplicando un Bundle, que me indica el estado del Bluethoot
             final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
-            //Si esta activado
             if (state == BluetoothAdapter.STATE_ON) {
-                response = "Tu bluetooth ya esta activo";
-                this.currentPresenter.showOnLabel(response);
+                response = "Tu bluetooth activo";
                 this.currentPresenter.showOnToast(response);
                 searchBluetoothDevices();
                 this.currentPresenter.enableButtons();
-            } else if(state == BluetoothAdapter.STATE_OFF) {
-                response = "Habilita el bluetooth para continuar...";
-                this.currentPresenter.showOnToast(response);
+            } else if (state == BluetoothAdapter.STATE_OFF) {
+                this.currentPresenter.showOnLabel("Habilita el bluetooth para continuar...");
                 this.currentPresenter.disableButtons();
                 this.currentPresenter.askBTPermission(); // Revisar si vale la pena
             }
-        }
-        else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-            // Arranco a buscar dispositivos
+        } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             this.currentPresenter.showLoadingDialog();
             this.currentPresenter.disableButtons();
         } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-            //Termino de buscar dispositivos
             this.currentPresenter.closeLoadingDialog();
 
-            // connectPrimaryDevice();
             if (primaryDevice == null) {
                 response = "No se encontro cortina disponible";
                 this.currentPresenter.showOnLabel(response);
-                this.currentPresenter.showOnToast(response);
                 this.currentPresenter.disableButtons();
             }
 
-        }
-        else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-            //Cada vez que encuentro un dispositivo bluetooth cercano
-
+        } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
             BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            this.currentPresenter.showOnToast("Dispositivo cercano: " + device.getName());
+            this.currentPresenter.consoleLog("Dispositivo cercano: ", device.getName());
             if (checkPrimaryDevice(device)) {
                 primaryDevice = device;
                 finishBluetoothSearch();
                 this.currentPresenter.enableButtons();
             }
-        } // No se si vale la pena todo lo de abajo.
-        /*else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-            // Obtengo los parametro, aplicando un Bundle, que me indica el estado del Bluethoot
-            final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-            final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-            if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                //Si se detecto que se puedo emparejar el bluethoot
-                this.currentPresenter.showOnToast("Proceso de conexion bt finalizado!");
-                BluetoothDevice dispositivo = (BluetoothDevice) primaryDevice;
-                //se inicia el Activity de comunicacion con el bluethoot, para transferir los datos.
-
-            } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
-                this.currentPresenter.showOnToast("Dispositivo desemparejado");
-                primaryDevice = null;
-            }
-        }*/
+        }
     }
 
     private boolean checkPrimaryDevice(BluetoothDevice currentDevice) {
         if (currentDevice.getAddress().equals(MAC_ADDRESS_DEVICE)) {
             if (currentDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
-                this.currentPresenter.showOnToast("Dispositivo cortina ya conectada!");
                 this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + " ya conectada!");
             } else {
                 pairDevice(currentDevice);
@@ -246,7 +207,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
 
     private void pairDevice(BluetoothDevice device) {
         try {
-            this.currentPresenter.showOnToast("Cortina cercana... Emparejando...");
+            this.currentPresenter.showOnLabel("Cortina cercana... Emparejando...");
             Method method = device.getClass().getMethod("createBond", (Class[]) null);
             method.invoke(device, (Object[]) null);
             this.currentPresenter.showOnLabel("Bindeo existoso para dispositivo: " + device.getName());
@@ -262,7 +223,6 @@ public class MainModel implements MainActivityContract.ModelMVP {
 
     private boolean primaryDeviceIsAlreadyConnected() {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        this.currentPresenter.consoleLog("Dispositivos ", String.valueOf(pairedDevices));
         if (pairedDevices == null || pairedDevices.size() == 0) {
             this.currentPresenter.showOnToast("No se encontraron dispositivos emparejados");
             this.primaryDevice = null;
@@ -271,10 +231,9 @@ public class MainModel implements MainActivityContract.ModelMVP {
                 if (currentDevice.getAddress().equals(MAC_ADDRESS_DEVICE)) {
                     if (currentDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
                         this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + " ya se encuentra conectada...");
-                        this.currentPresenter.showOnToast("Paireado de cortina finalizado conectada!!!");
-                    } else { // Caso extranio, analizar... Si estoy buscando entre dispositivos conectados y no esta enlazada, deberia ser un error.
-                        // Intento reconectarla.
+                    } else {
                         pairDevice(currentDevice);
+                        this.currentPresenter.showOnLabel("Paireando Cortina nuevamente");
                     }
                     this.primaryDevice = currentDevice;
                     return true;

@@ -18,7 +18,6 @@ import java.util.UUID;
 
 public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private static final String TAG = "PrimaryModel";
-    private int currentLight = 0;
 
     private StringBuilder recDataString = new StringBuilder();
     Handler bluetoothIn;
@@ -45,18 +44,15 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
 
     @Override
     public void reconnectBluetoothDevice(String macAddress) {
-        Log.i(TAG, "LEYENDO MAC: " + macAddress);
         btSocket = creationSocketByDevice(macAddress);
         mConnectedThread = new ConnectedThread(btSocket);
-        Log.i(TAG, "Thread creado: " + mConnectedThread);
         mConnectedThread.start();
-        Log.i(TAG, "Thread started  " + mConnectedThread);
+        Log.i(TAG, "Thread iniciado  " + mConnectedThread);
         mConnectedThread.write(GET_FINAL_LIGHT_LEVEL + EOF_SEND_MARK_SE);
     }
 
     @Override
     public void sendLevelValueToDevice(int lightValue) {
-        //int lightResultValue = lightValue >= MAX_VALUE_LIGHT_LEVEL ? MAX_VALUE_LIGHT_LEVEL : lightValue< MIN_VALUE_LIGHT_LEVEL? MIN_VALUE_LIGHT_LEVEL: lightValue;
         int lightResultValue = lightValue >= MAX_VALUE_LIGHT_LEVEL ? MAX_VALUE_LIGHT_LEVEL : Math.max(lightValue, MIN_VALUE_LIGHT_LEVEL);
         String lightLevelResult = String.valueOf(lightResultValue);
         Log.i(TAG, "Luminosidad enviada al SE: " + lightLevelResult);
@@ -124,18 +120,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
         }
     }
 
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
-        // Crear el socket para comunicacion por BT
-        BluetoothSocket socketCreado = null;
-        try {
-            Log.i(TAG, "Intenta crear socket con device: " + device.getName());
-            socketCreado = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
-        } catch (Exception e) {
-            Log.i(TAG, "Excepcion al crear socket " + e);
-        }
-        return socketCreado;
-    }
-
     private boolean isNumericOrEOF(String strNum) {
         if (strNum == null) {
             return false;
@@ -161,19 +145,13 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 if (msg.what == handlerState) {
                     String readMessage = (String) msg.obj;
                     boolean isNumber = isNumericOrEOF(readMessage);
-                    Log.i(TAG, "Es numero? :  " + isNumber);
                     if (isNumber) {
-                        Log.i(TAG, "Es numero o EOF " + readMessage);
                         recDataString.append(readMessage);
 
                         int endOfLineIndex = recDataString.indexOf("#");
-                        //cuando recibo toda una linea la muestro en el layout
-                        Log.i(TAG, "Indice de end:  " + endOfLineIndex);
                         if (endOfLineIndex > NOT_FOUND_INDEX) {
                             String dataInPrint = recDataString.substring(START_INDEX, endOfLineIndex);
                             recDataString.delete(START_INDEX, recDataString.length());
-                            Log.i(TAG, "Rec final a leer:  " + recDataString);
-                            Log.i(TAG, "dataInPrint final a leer:  " + dataInPrint);
                             int lightLevelToSet = Integer.parseInt(String.valueOf(dataInPrint));
 
                             if(firstAccess){
@@ -182,8 +160,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                             } else{
                                 presenter.saveCurrentLight(lightLevelToSet);
                             }
-                            //presenter.saveCurrentLight(lightLevelToSet);
-
                         }
                     }
                 }
@@ -205,6 +181,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             try {
                 socketResult.close();
             } catch (IOException c) {
+                Log.i(TAG, "Excepcion al cerrar socket:  " + c);
                 return socketResult;
             }
         }

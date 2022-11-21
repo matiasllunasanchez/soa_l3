@@ -62,7 +62,6 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         this.initializeButtons();
         this.initializeLabels();
         this.initializeOthers();
-        Log.i(TAG, "Paso al estado Createad");
     }
 
     private void initializeButtons() {
@@ -74,12 +73,8 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             @Override
             public void onClick(View view) {
                 int lightValue = Integer.parseInt(String.valueOf(inputTextbox.getText()));
-                // presenter.saveInputValue(lightValue);
-
-                // Mando 9 y luego el valor del 0 al 100.
-                // Falta limitar esto de 10 a 90
                 presenter.sendLightLevelValue(lightValue);
-                showToast("Luminosidad deseada enviada");
+                showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue));
             }
         });
 
@@ -118,36 +113,29 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         this.seekBarValue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.i(TAG, "Mientras cambia la barra" + progress);
                 inputTextbox.setText(String.valueOf(progress));
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG, "Apenas arranca a cambiar la barra");
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.i(TAG, "Al terminar de cambiar la barra");
             }
         });
 
         this.inputTextbox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.i(TAG, "Antes de cambiar input");
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.i(TAG, "Mientra cambia input" + i);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.i(TAG, "Despues de cambiar input" + editable);
-
                 if (editable.toString().equals(""))
                     seekBarValue.setProgress(0);
                 else {
@@ -159,14 +147,12 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
 
     @Override
     public void saveCurrentLightLevel(int value) {
-        Log.i(TAG, "Se guardo valor de luz actual: " + value);
         this.txtCurrentLightLevel.setText("Porcentaje de luz: " + String.valueOf(value) + "%");
         this.setLampLevel(value);
     }
 
     @Override
     public void saveFinalLightLevel(int value) {
-        Log.i(TAG, "Se guardo valor de luz deseada: " + value);
         this.inputTextbox.setText(String.valueOf(value));
         seekBarValue.setProgress(Integer.parseInt(String.valueOf(value)));
         this.setLampLevel(value);
@@ -207,7 +193,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // this.presenter.onDestroyProcess();
+        this.presenter.onDestroyProcess(); // Revisar si comentarlo
     }
 
     @Override

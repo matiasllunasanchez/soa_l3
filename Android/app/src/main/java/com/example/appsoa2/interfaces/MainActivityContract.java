@@ -38,17 +38,11 @@ public interface MainActivityContract {
             void disableButtons();
             void enableButtons();
         }
-
-        void processDataGetResult(MainActivityContract.ModelMVP.OnSendToPresenter presenter);
     }
 
     interface PresenterMVP extends BasePresenter {
         void getReadyLogic(Context context);
-
         void permissionsGrantedProcess();
-
         String getConnectedDeviceAddress();
-   /*     void showOnToast(String message);
-        void showOnLabel(String message);*/
     }
 }

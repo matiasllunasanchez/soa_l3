@@ -116,14 +116,12 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
     @Override
     public void onPause() {
-        showToast("On pause!");
         this.presenter.onPauseProcess();
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        showToast("On resume!");
         this.presenter.onResumeProcess();
         super.onResume();
     }
@@ -176,7 +174,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
     @Override
     public void showResultOnLabel(String msg) {
-        // Log.i(TAG, "Mostrar en label: "+msg);
         consoleLog("Mostrar en label: ", msg);
         this.txtEstado.setText(msg);
     }

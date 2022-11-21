@@ -61,7 +61,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         this.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "Click en BACK ");
                 try {
                     Intent k = new Intent(SecondaryActivity.this, MainActivity.class);
                     startActivity(k);
