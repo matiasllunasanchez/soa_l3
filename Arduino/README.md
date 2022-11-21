@@ -1,14 +1,10 @@
-# soa_2022_l3
-src->main.cpp
-extensión: PlataformIO 
+# soa_l3
 
-El envio de comandos es:
-1# Iluminacion actual (Potenciometro o LDR Interior)
-2# Iluminacion deseada
-
-3# LED Rojo
-4# LED Verde
-5# LED Azul
-6# LED Blanco
-
-9XX# Set iluminacion deseada con XX
+Comandos aceptados por el SE:
+    1# Iluminación actual (Potenciometro o LDR Interior)
+    2# Iluminación deseada (Potenciometro o LDR Exterior)
+    3# Set LED Rojo
+    4# Set LED Verde
+    5# Set LED Azul
+    6# Set LED Blanco
+    9XX# Set Iluminación deseada con XX
