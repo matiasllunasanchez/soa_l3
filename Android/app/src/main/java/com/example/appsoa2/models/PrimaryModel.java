@@ -18,7 +18,6 @@ import java.util.UUID;
 
 public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private static final String TAG = "PrimaryModel";
-
     private StringBuilder recDataString = new StringBuilder();
     Handler bluetoothIn;
     final int handlerState = 0;
@@ -35,19 +34,21 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private int START_INDEX = 0;
     private int NOT_FOUND_INDEX = -1;
     private boolean firstAccess = true;
+    private PrimaryPresenter currentPresenter;
 
     @Override
     public void getReadyBluetooth(PrimaryPresenter presenter) {
+        this.currentPresenter = presenter;
         this.btAdapter = BluetoothAdapter.getDefaultAdapter();
         this.bluetoothIn = bluetoothMessageHandler_PrimaryThread(presenter);
     }
 
     @Override
-    public void reconnectBluetoothDevice(String macAddress) {
+    public void connectBluetoothDevice(String macAddress) {
         btSocket = creationSocketByDevice(macAddress);
         mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
-        Log.i(TAG, "Thread iniciado  " + mConnectedThread);
+        consoleLog("Thread iniciado:", mConnectedThread.toString());
         mConnectedThread.write(GET_FINAL_LIGHT_LEVEL + EOF_SEND_MARK_SE);
     }
 
@@ -55,7 +56,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     public void sendLevelValueToDevice(int lightValue) {
         int lightResultValue = lightValue >= MAX_VALUE_LIGHT_LEVEL ? MAX_VALUE_LIGHT_LEVEL : Math.max(lightValue, MIN_VALUE_LIGHT_LEVEL);
         String lightLevelResult = String.valueOf(lightResultValue);
-        Log.i(TAG, "Luminosidad enviada al SE: " + lightLevelResult);
+        consoleLog("Luminosidad enviada al SE:", lightLevelResult.toString());
         mConnectedThread.write(START_SEND_MARK_SE + lightLevelResult + EOF_SEND_MARK_SE);
     }
 
@@ -70,7 +71,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
         {
             btSocket.close();
         } catch (IOException e2) {
-            Log.i(TAG, "Excepcion  " + e2);
+            consoleLog("Excepcion al intentar cerrar el socket:", e2.toString());
         }
     }
 
@@ -85,7 +86,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.i(TAG, "Error en obtener stream desde socket: " + e);
+                consoleLog("Error en obtener stream desde socket:", e.toString());
             }
 
             mmInStream = tmpIn;
@@ -100,10 +101,10 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 try {
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, START_INDEX, bytes);
-                    Log.i(TAG, "Read de buffer: " + readMessage);
+                    consoleLog("Read de buffer:  ", readMessage);
                     bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
                 } catch (IOException e) {
-                    Log.i(TAG, "Error en lectura de caracter recibido / buffer: " + e);
+                    consoleLog("Error en lectura de caracter recibido / buffer:",  e.toString());
                     break;
                 }
             }
@@ -113,9 +114,10 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             byte[] msgBuffer = input.getBytes();
             try {
                 mmOutStream.write(msgBuffer);
-                Log.i(TAG, "Write a SE con valor: " + input);
+                consoleLog("Write a SE con valor:", input);
             } catch (IOException e) {
-                Log.i(TAG, "Error al mandar datos al SE " + e);
+                consoleLog("Error al mandar datos al SE:",  e.toString());
+                currentPresenter.showOnToast("Error en envío de datos al SE");
             }
         }
     }
@@ -140,8 +142,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             @SuppressLint("HandlerLeak")
             public void handleMessage(android.os.Message msg) {
 
-                Log.i(TAG, "Se recibio un dato desde el SE " + msg.obj);
-
+                consoleLog("Se recibio un dato desde el SE:",  msg.obj.toString());
                 if (msg.what == handlerState) {
                     String readMessage = (String) msg.obj;
                     boolean isNumber = isNumericOrEOF(readMessage);
@@ -171,17 +172,17 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
 
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
-
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();
-            Log.i("[BLUETOOTH]", "Connected to: " + device.getName());
+            consoleLog("[BLUETOOTH] conectado a:", device.getName());
         } catch (IOException e) {
             try {
                 socketResult.close();
             } catch (IOException c) {
-                Log.i(TAG, "Excepcion al cerrar socket:  " + c);
+                consoleLog("Excepcion al cerrar socket:", c.toString());
                 return socketResult;
             }
         }
@@ -189,4 +190,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
         return socketResult;
     }
 
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label +" "+ data);
+    }
 }

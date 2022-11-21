@@ -27,7 +27,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     private Button btnBack;
     private TextView txtColorSelected;
-    private ImageView imgCurrentLed;
     private static final String RED_COLOR_HEX = "#FF0000";
     private static final String GREEN_COLOR_HEX = "#00FF00";
     private static final String BLUE_COLOR_HEX = "0000FF";
@@ -43,10 +42,10 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
     }
 
     private void initialize() {
+        this.presenter = new SecondaryPresenter(this);
         this.initializeButtons();
         this.initializeRest();
-        presenter = new SecondaryPresenter(this);
-        presenter.getReadyLogic(this);
+        this.presenter.getReadyLogic(this);
     }
 
     private void initializeRest() {
@@ -57,14 +56,15 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     private void initializeButtons() {
         this.btnBack = this.findViewById(R.id.button_secondary_back);
-
         this.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
+                    btnBack.setEnabled(false);
                     Intent k = new Intent(SecondaryActivity.this, MainActivity.class);
                     startActivity(k);
                 } catch (Exception e) {
+                    consoleLog("Excepcion al presionar volver:", e.toString());
                     e.printStackTrace();
                 }
             }
@@ -112,10 +112,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -124,13 +120,13 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     @Override
     public void onResume() {
-        this.presenter.getReadyLogicAgain(this);
+        super.onResume();
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String address = extras.getString("Direccion_Bluethoot");
-        this.presenter.reconnectDevice(address);
-        Log.i(TAG, "Reconecto dispositivo y seteo color al LED");
-        super.onResume();
+        consoleLog("Reconecto dispositivo y seteo color de LED","");
+        this.presenter.getReadyLogicAgain(this);
+        this.presenter.connectDevice(address);
     }
 
     @Override
@@ -144,4 +140,12 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         Log.i(TAG, label + msg);
     }
 
+    public void showResultOnToast(String msg) {
+        consoleLog("Mostrar en toast:", msg);
+        showToast(msg);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
 }

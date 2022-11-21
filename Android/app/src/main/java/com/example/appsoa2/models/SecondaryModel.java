@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.util.Log;
 
 import com.example.appsoa2.interfaces.MainActivityContract;
 import com.example.appsoa2.interfaces.SecondaryActivityContract;
+import com.example.appsoa2.presenters.SecondaryPresenter;
 import com.example.appsoa2.views.SecondaryActivity;
 
 import java.io.IOException;
@@ -53,6 +55,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private SecondaryPresenter currentPresenter;
 
     @Override
     public void getReadySensors(Context context) {
@@ -91,27 +94,29 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         try {
             btSocket.close();
         } catch (IOException e2) {
-            Log.i(TAG, "Excepcion al intentar cerrar socket de BT" + e2);
+            consoleLog("Excepcion al intentar cerrar socket de BT", e2.toString());
         }
     }
 
     @Override
-    public void disconnectSensors(SecondaryActivity secondaryActivity) {
-        this.sensorManager.unregisterListener(secondaryActivity);
+    public void disconnectSensors(Context context) {
+        this.sensorManager.unregisterListener((SensorEventListener) context);
     }
 
     @Override
-    public void reconnectSensors(SecondaryActivity secondaryActivity) {
-        this.sensorManager.registerListener(secondaryActivity, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    public void connectSensors(Context context) {
+        consoleLog("Intenta reconectar sensores","");
+        this.sensorManager.registerListener((SensorEventListener) context, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
-    public void getReadyBluetooth(Context context) {
+    public void getReadyBluetooth(SecondaryPresenter presenter) {
+        this.currentPresenter = presenter;
         this.btAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     @Override
-    public void reconnectBluetoothDevice(String address) {
+    public void connectBluetoothDevice(String address) {
         btSocket = creationSocketByDevice(address);
         mConnectedThread = new SecondaryModel.ConnectedThread(btSocket);
         mConnectedThread.start();
@@ -159,9 +164,12 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.i(TAG, "Error al conectar thread: " + e);
+                consoleLog("Excepcion al obtener lectura del SE:", e.toString());
             }
             mmOutStream = tmpOut;
+        }
+        public void run() {
+
         }
 
         public void write(String input) {
@@ -171,7 +179,8 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) {
-                Log.i(TAG, "Excepcion: Al mandar datos al SE: " + e);
+                consoleLog("Excepcion al enviar write al SE:", e.toString());
+                currentPresenter.showOnToast("Error en envío de datos al SE");
             }
         }
     }
@@ -179,15 +188,17 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();
-            Log.i("[BLUETOOTH]", "Connected to: " + device.getName());
+            consoleLog("[BLUETOOTH] conectado a:", device.getName());
         } catch (IOException e) {
+            consoleLog("Excepcion al conectar el socket:", e.toString());
             try {
                 socketResult.close();
             } catch (IOException c) {
-                Log.i(TAG, "Excepcion  " + e);
+                consoleLog("Excepcion al cerrar socket:", c.toString());
                 return socketResult;
             }
         }
@@ -200,7 +211,11 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         {
             btSocket.close();
         } catch (IOException e2) {
-            Log.i(TAG, "Excepcion  " + e2);
+            consoleLog("Excepcion al cerrar socket:", e2.toString());
         }
+    }
+
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label + data);
     }
 }

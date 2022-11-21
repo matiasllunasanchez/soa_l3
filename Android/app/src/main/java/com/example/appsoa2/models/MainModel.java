@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.example.appsoa2.interfaces.MainActivityContract;
 import com.example.appsoa2.presenters.MainPresenter;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 public class MainModel implements MainActivityContract.ModelMVP {
-
+    private static final String TAG = "MainModel";
     private BluetoothDevice primaryDevice = null;
     private BluetoothAdapter mBluetoothAdapter;
     private static final int MULTIPLE_PERMISSIONS = 10;
@@ -127,7 +128,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 response = "Bluetooth ya encendido!!";
-                this.currentPresenter.consoleLog(response,"");
+                consoleLog(response,"");
                 if (!primaryDeviceIsAlreadyConnected()) {
                     searchBluetoothDevices();
                 }
@@ -184,7 +185,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
 
         } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
             BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            this.currentPresenter.consoleLog("Dispositivo cercano: ", device.getName());
+           consoleLog("Dispositivo cercano: ", device.getName());
             if (checkPrimaryDevice(device)) {
                 primaryDevice = device;
                 finishBluetoothSearch();
@@ -230,7 +231,8 @@ public class MainModel implements MainActivityContract.ModelMVP {
             for (BluetoothDevice currentDevice : pairedDevices) {
                 if (currentDevice.getAddress().equals(MAC_ADDRESS_DEVICE)) {
                     if (currentDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
-                        this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + " ya se encuentra conectada...");
+                        this.currentPresenter.showOnToast("Cortina " + currentDevice.getName() + "conectada");
+                        this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + "conectada");
                     } else {
                         pairDevice(currentDevice);
                         this.currentPresenter.showOnLabel("Paireando Cortina nuevamente");
@@ -242,4 +244,9 @@ public class MainModel implements MainActivityContract.ModelMVP {
         }
         return false;
     }
+
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label + data);
+    }
+
 }

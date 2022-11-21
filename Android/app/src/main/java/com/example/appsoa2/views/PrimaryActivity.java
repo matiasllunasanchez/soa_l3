@@ -43,6 +43,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
 
     private Button btnSave, btnBack, btnRefresh;
     private TextView txtCurrentLightLevel;
+    private TextView txtFinalLightLevel;
     private EditText inputTextbox;
     private SeekBar seekBarValue;
     private ImageView lampImg;
@@ -58,10 +59,10 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
 
     private void initialize() {
         this.presenter = new PrimaryPresenter(this);
-        this.presenter.getReadyLogic();
         this.initializeButtons();
         this.initializeLabels();
-        this.initializeOthers();
+        this.initializeRest();
+        this.presenter.getReadyLogic();
     }
 
     private void initializeButtons() {
@@ -74,7 +75,8 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             public void onClick(View view) {
                 int lightValue = Integer.parseInt(String.valueOf(inputTextbox.getText()));
                 presenter.sendLightLevelValue(lightValue);
-                showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue));
+                showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue)+"%");
+                enableButtons();
             }
         });
 
@@ -83,10 +85,12 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             public void onClick(View view) {
                 Log.i(TAG, "Click en BACK ");
                 try {
+                    disableButtons();
                     Intent k = new Intent(PrimaryActivity.this, MainActivity.class);
                     startActivity(k);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    consoleLog("Excepcion al clickear en volver:", e.toString());
                 }
             }
         });
@@ -95,16 +99,19 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             @Override
             public void onClick(View view) {
                 presenter.getCurrentLevelLight();
+                enableButtons();
             }
         });
-
+       this.btnSave.setEnabled(false);
+       this.btnBack.setEnabled(true);
     }
 
     private void initializeLabels() {
         this.txtCurrentLightLevel = this.findViewById(R.id.text_primary_currentLightLevel);
+        this.txtFinalLightLevel = this.findViewById(R.id.textView5);
     }
 
-    private void initializeOthers() {
+    private void initializeRest() {
         this.seekBarValue = (SeekBar) this.findViewById(R.id.seekbar_primary_finalLightLevel);
         this.inputTextbox = (EditText) this.findViewById(R.id.input_primary_finalLightLevel);
         this.inputTextbox.setFilters(new InputFilter[]{new MinMaxFilter("0", "100")});
@@ -149,6 +156,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     public void saveCurrentLightLevel(int value) {
         this.txtCurrentLightLevel.setText("Porcentaje de luz: " + String.valueOf(value) + "%");
         this.setLampLevel(value);
+        enableButtons();
     }
 
     @Override
@@ -156,12 +164,8 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         this.inputTextbox.setText(String.valueOf(value));
         seekBarValue.setProgress(Integer.parseInt(String.valueOf(value)));
         this.setLampLevel(value);
-    }
-
-
-    @Override
-    public void consoleLog(String label, String msg) {
-        Log.i(TAG, label + msg);
+        this.txtFinalLightLevel.setText("Luminosidad deseada:");
+        this.btnSave.setEnabled(true);
     }
 
     private void setLampLevel(int value) {
@@ -180,10 +184,6 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -193,17 +193,38 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.presenter.onDestroyProcess(); // Revisar si comentarlo
+        this.presenter.onDestroyProcess();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String macAddress = extras.getString("Direccion_Bluethoot");
-        this.presenter.reconnectDevice(macAddress);
+        this.presenter.connectDevice(macAddress);
+        super.onResume();
     }
 
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label +" "+ data);
+    }
+
+    private void enableButtons(){
+        this.btnSave.setEnabled(true);
+        this.btnBack.setEnabled(true);
+    }
+
+    private void disableButtons(){
+        this.btnSave.setEnabled(false);
+        this.btnBack.setEnabled(false);
+    }
+
+    public void showResultOnToast(String msg) {
+        consoleLog("Mostrar en toast:", msg);
+        showToast(msg);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
 }
