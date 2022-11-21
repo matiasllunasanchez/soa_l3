@@ -4,7 +4,7 @@
 // ------------------------------------------------
 // Etiquetas
 // ------------------------------------------------
-//#define LOG // Comentar esta linea para desactivar los LOG
+//#define LOG
 
 // ------------------------------------------------
 // Constantes
@@ -29,13 +29,13 @@
 #define FIFTY 50
 #define RXPIN 8
 #define TXPIN 12
-#define OPCION_A 49                     // 1
-#define OPCION_B 50                     // 2
-#define OPCION_RED 51                   // 3
-#define OPCION_GREEN 52                 // 4
-#define OPCION_BLUE 53                  // 5
-#define OPCION_BLANCO 54                // 6
-#define SOLICITUD_ENVIAR_ILU_DESEADA 57 // 9
+#define OPCION_A 49
+#define OPCION_B 50
+#define OPCION_RED 51
+#define OPCION_GREEN 52
+#define OPCION_BLUE 53
+#define OPCION_BLANCO 54
+#define SOLICITUD_ENVIAR_ILU_DESEADA 57
 
 // ------------------------------------------------
 // Sensor LUZ INTERIOR
