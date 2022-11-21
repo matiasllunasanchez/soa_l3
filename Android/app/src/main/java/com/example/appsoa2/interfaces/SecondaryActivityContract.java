@@ -15,8 +15,8 @@ public interface SecondaryActivityContract {
         void getReadySensors(Context context);
         void movementDetected(SensorEvent sensorEvent, SecondaryActivityContract.ModelMVP.OnSendToPresenter presenter);
         void disconnectBT();
-        void disconnectSensors(SecondaryActivity secondaryActivity);
-        void reconnectSensors(SecondaryActivity secondaryActivity);
+        void disconnectSensors(Context context);
+        void reconnectSensors(Context context);
         void getReadyBluetooth(Context context);
         void reconnectBluetoothDevice(String address);
         void sendLedColorValue(String valueOf);
@@ -32,8 +32,8 @@ public interface SecondaryActivityContract {
         void shakeEventHandler();
         void getReadyLogic(Context context);
         void movementDetected(SensorEvent sensorEvent);
-        void safeDisconnect(SecondaryActivity secondaryActivity);
-        void getReadyLogicAgain(SecondaryActivity secondaryActivity);
+        void safeDisconnect(Context context);
+        void getReadyLogicAgain(Context context);
         void reconnectDevice(String address);
         void sendColorToDevice(String valueOf);
         void onDestroyProcess();

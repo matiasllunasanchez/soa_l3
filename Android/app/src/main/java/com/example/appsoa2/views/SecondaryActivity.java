@@ -42,10 +42,10 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
     }
 
     private void initialize() {
+        this.presenter = new SecondaryPresenter(this);
         this.initializeButtons();
         this.initializeRest();
-        presenter = new SecondaryPresenter(this);
-        presenter.getReadyLogic(this);
+        this.presenter.getReadyLogic(this);
     }
 
     private void initializeRest() {
@@ -56,14 +56,15 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     private void initializeButtons() {
         this.btnBack = this.findViewById(R.id.button_secondary_back);
-
         this.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
+                    btnBack.setEnabled(false);
                     Intent k = new Intent(SecondaryActivity.this, MainActivity.class);
                     startActivity(k);
                 } catch (Exception e) {
+                    consoleLog("Excepcion al presionar volver:", e.toString());
                     e.printStackTrace();
                 }
             }
@@ -123,13 +124,13 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     @Override
     public void onResume() {
-        this.presenter.getReadyLogicAgain(this);
+        super.onResume();
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String address = extras.getString("Direccion_Bluethoot");
+        consoleLog("Reconecto dispositivo y seteo color de LED","");
+        this.presenter.getReadyLogicAgain(this);
         this.presenter.reconnectDevice(address);
-        Log.i(TAG, "Reconecto dispositivo y seteo color al LED");
-        super.onResume();
     }
 
     @Override

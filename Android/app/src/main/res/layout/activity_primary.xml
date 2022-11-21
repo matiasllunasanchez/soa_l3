@@ -77,7 +77,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="172dp"
-        android:text="Luminosidad deseada:"
+        android:text="Cargando luminosidad deseada..."
         android:textColor="#313848"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

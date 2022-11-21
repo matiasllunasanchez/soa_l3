@@ -169,8 +169,8 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
 
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
-
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();

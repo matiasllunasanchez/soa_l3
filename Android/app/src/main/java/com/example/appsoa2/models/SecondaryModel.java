@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
@@ -96,13 +97,14 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     }
 
     @Override
-    public void disconnectSensors(SecondaryActivity secondaryActivity) {
-        this.sensorManager.unregisterListener(secondaryActivity);
+    public void disconnectSensors(Context context) {
+        this.sensorManager.unregisterListener((SensorEventListener) context);
     }
 
     @Override
-    public void reconnectSensors(SecondaryActivity secondaryActivity) {
-        this.sensorManager.registerListener(secondaryActivity, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    public void reconnectSensors(Context context) {
+        consoleLog("Intenta reconectar sensores","");
+        this.sensorManager.registerListener((SensorEventListener) context, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -179,6 +181,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();

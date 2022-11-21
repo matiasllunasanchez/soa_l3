@@ -43,6 +43,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
 
     private Button btnSave, btnBack, btnRefresh;
     private TextView txtCurrentLightLevel;
+    private TextView txtFinalLightLevel;
     private EditText inputTextbox;
     private SeekBar seekBarValue;
     private ImageView lampImg;
@@ -58,10 +59,10 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
 
     private void initialize() {
         this.presenter = new PrimaryPresenter(this);
-        this.presenter.getReadyLogic();
         this.initializeButtons();
         this.initializeLabels();
-        this.initializeOthers();
+        this.initializeRest();
+        this.presenter.getReadyLogic();
     }
 
     private void initializeButtons() {
@@ -74,7 +75,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             public void onClick(View view) {
                 int lightValue = Integer.parseInt(String.valueOf(inputTextbox.getText()));
                 presenter.sendLightLevelValue(lightValue);
-                showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue));
+                showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue)+"%");
             }
         });
 
@@ -83,6 +84,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             public void onClick(View view) {
                 Log.i(TAG, "Click en BACK ");
                 try {
+                    disableButtons();
                     Intent k = new Intent(PrimaryActivity.this, MainActivity.class);
                     startActivity(k);
                 } catch (Exception e) {
@@ -98,14 +100,15 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
                 presenter.getCurrentLevelLight();
             }
         });
-
+        disableButtons();
     }
 
     private void initializeLabels() {
         this.txtCurrentLightLevel = this.findViewById(R.id.text_primary_currentLightLevel);
+        this.txtFinalLightLevel = this.findViewById(R.id.textView5);
     }
 
-    private void initializeOthers() {
+    private void initializeRest() {
         this.seekBarValue = (SeekBar) this.findViewById(R.id.seekbar_primary_finalLightLevel);
         this.inputTextbox = (EditText) this.findViewById(R.id.input_primary_finalLightLevel);
         this.inputTextbox.setFilters(new InputFilter[]{new MinMaxFilter("0", "100")});
@@ -150,6 +153,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     public void saveCurrentLightLevel(int value) {
         this.txtCurrentLightLevel.setText("Porcentaje de luz: " + String.valueOf(value) + "%");
         this.setLampLevel(value);
+        enableButtons();
     }
 
     @Override
@@ -157,6 +161,8 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         this.inputTextbox.setText(String.valueOf(value));
         seekBarValue.setProgress(Integer.parseInt(String.valueOf(value)));
         this.setLampLevel(value);
+        this.txtFinalLightLevel.setText("Luminosidad deseada:");
+        enableButtons();
     }
 
     private void setLampLevel(int value) {
@@ -188,21 +194,29 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.presenter.onDestroyProcess(); // Revisar si comentarlo
+        this.presenter.onDestroyProcess();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String macAddress = extras.getString("Direccion_Bluethoot");
         this.presenter.reconnectDevice(macAddress);
+        super.onResume();
     }
 
     private void consoleLog(String label, String data) {
         Log.i(TAG, label +" "+ data);
     }
 
+    private void enableButtons(){
+        this.btnSave.setEnabled(true);
+        this.btnBack.setEnabled(true);
+    }
+
+    private void disableButtons(){
+        this.btnSave.setEnabled(false);
+        this.btnBack.setEnabled(false);
+    }
 }

@@ -35,14 +35,14 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
     }
 
     @Override
-    public void safeDisconnect(SecondaryActivity secondaryActivity) {
+    public void safeDisconnect(Context context) {
         this.model.disconnectBT();
-        this.model.disconnectSensors(secondaryActivity);
+        this.model.disconnectSensors(context);
     }
 
     @Override
-    public void getReadyLogicAgain(SecondaryActivity secondaryActivity) {
-        this.model.reconnectSensors(secondaryActivity);
+    public void getReadyLogicAgain(Context context) {
+        this.model.reconnectSensors(context);
     }
 
     @Override

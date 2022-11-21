@@ -231,8 +231,8 @@ public class MainModel implements MainActivityContract.ModelMVP {
             for (BluetoothDevice currentDevice : pairedDevices) {
                 if (currentDevice.getAddress().equals(MAC_ADDRESS_DEVICE)) {
                     if (currentDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
-                        this.currentPresenter.showOnToast("Cortina " + currentDevice.getName() + " conectada");
-                        this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + " conectada");
+                        this.currentPresenter.showOnToast("Cortina " + currentDevice.getName() + "conectada");
+                        this.currentPresenter.showOnLabel("Cortina " + currentDevice.getName() + "conectada");
                     } else {
                         pairDevice(currentDevice);
                         this.currentPresenter.showOnLabel("Paireando Cortina nuevamente");

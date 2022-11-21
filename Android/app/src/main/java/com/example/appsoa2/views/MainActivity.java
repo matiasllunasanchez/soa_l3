@@ -59,7 +59,12 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
     }
 
     private void initialize() {
+        initializeButtons();
+        initializeRest();
+        this.presenter.getReadyLogic(this);
+    }
 
+    private void initializeButtons(){
         btnPrimary = findViewById(R.id.button_primary);
         btnSecondary = findViewById(R.id.button_secondary);
 
@@ -67,11 +72,12 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
         btnSecondary.setOnClickListener(this.btnListener);
         this.presenter = new MainPresenter(this);
         this.txtEstado = (TextView) findViewById(R.id.txtEstado);
+    }
 
+    private void initializeRest(){
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Buscando dispositivos...");
         mProgressDlg.setCancelable(false);
-        this.presenter.getReadyLogic(this);
     }
 
     private View.OnClickListener btnListener = new View.OnClickListener() {
@@ -83,25 +89,32 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
                     consoleLog("Ir a pantalla primaria / ILUMINACION","");
                     try {
                         if (address != null) {
+                            btnPrimary.setEnabled(false);
+                            btnSecondary.setEnabled(false);
+                            txtEstado.setText("Esperá.... Cargando pantalla de iluminación...");
                             Intent k = new Intent(MainActivity.this, PrimaryActivity.class);
                             k.putExtra("Direccion_Bluethoot", address);
                             startActivity(k);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        consoleLog("Excepcion al querer ir a la pantalla de iluminacion", e.toString());
                     }
                     break;
                 case R.id.button_secondary:
                     consoleLog("Ir a pantalla secundaria / COLOR","");
                     try {
                         if (address != null) {
+                            btnSecondary.setEnabled(false);
+                            btnPrimary.setEnabled(false);
+                            txtEstado.setText("Esperá.... Cargando pantalla de color...");
                             Intent k = new Intent(MainActivity.this, SecondaryActivity.class);
                             k.putExtra("Direccion_Bluethoot", address);
                             startActivity(k);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        consoleLog("Excepcion", e.toString());
+                        consoleLog("Excepcion al querer ir a la pantalla de color", e.toString());
                     }
                     break;
                 default:
