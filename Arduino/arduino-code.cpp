@@ -4,25 +4,20 @@
 // ------------------------------------------------
 // Etiquetas
 // ------------------------------------------------
-//#define LOG // Comentar esta linea para desactivar los LOG
+//#define LOG
 
 // ------------------------------------------------
 // Constantes
 // ------------------------------------------------
 #define INICIAL_INDICE 0
-#define VALOR_CONTINUE -1
 #define BAUDIOS 9600
 #define RANGO_DIA_NOCHE 40
-
 #define TMP_EVENTOS_MILI 500
 #define NO 0
 #define SI 1
 #define ZERO 0
-#define SSS 666
 #define ONE 1
 #define TEN 10
-#define FF 55
-#define NN 99
 #define BASE 10
 #define DY_BT 100
 #define NCHARSBT 3
@@ -31,28 +26,25 @@
 #define FL 35
 #define BN '\n'
 #define BZERO '\0'
-
+#define FIFTY 50
 #define RXPIN 8
 #define TXPIN 12
-
-#define OPCION_A 49                     // 1
-#define OPCION_B 50                     // 2
-#define OPCION_RED 51                   // 3
-#define OPCION_GREEN 52                 // 4
-#define OPCION_BLUE 53                  // 5
-#define OPCION_BLANCO 54                // 6
-#define SOLICITUD_ENVIAR_ILU_DESEADA 57 // 9
+#define OPCION_A 49
+#define OPCION_B 50
+#define OPCION_RED 51
+#define OPCION_GREEN 52
+#define OPCION_BLUE 53
+#define OPCION_BLANCO 54
+#define SOLICITUD_ENVIAR_ILU_DESEADA 57
 
 // ------------------------------------------------
 // Sensor LUZ INTERIOR
 // ------------------------------------------------
-#define LUMINOSIDAD_INT 0
 #define PIN_LDR_INT A3
 
 // ------------------------------------------------
 // Sensor LUZ EXTERIOR
 // ------------------------------------------------
-#define LUMINOSIDAD_EXT 0
 #define PIN_LDR_EXT A2
 
 #define SENSOR_VALOR_MINIMO 0
@@ -170,46 +162,31 @@ typedef struct actuador_motor
 // ------------------------------------------------
 estado_e estado_actual;
 evento_t evento;
-
 sensor_luz_t sensor_ext;
 sensor_luz_t sensor_int;
 actuador_motor_t actuador_motor;
-
 sensor_final_carrera_t final_carrera_sup;
 sensor_final_carrera_t final_carrera_inf;
-
 actuador_led_t actuador_led;
 
 int potencia_iluminacion = ZERO;
-
 unsigned long tiempo_anterior;
 unsigned long tiempo_actual;
-unsigned long valor_referencia;
-int indice = INICIAL_INDICE;
-int cortina_bajando = ZERO;
-int cortina_subiendo = ZERO;
-unsigned long tiempo_inicio_bajada;
-unsigned long tiempo_inicio_subida;
-unsigned long tiempo_final_bajada;
-unsigned long tiempo_final_subida;
-boolean sigo = true;
-volatile int estado_final_sup = FINAL_CARRERA_LIBRE;
-volatile int estado_final_inf = FINAL_CARRERA_LIBRE;
-
-int max_iluminacion_deseada = 0;
-int min_iluminacion_deseada = 0;
-int iluminacion_deseada = 50;
-
-int dato_bt = ZERO;
-int ilu_recibida=ZERO;
-
-int user_red = ZERO;
-int user_green = ZERO;
-int user_blue = ZERO;
-char salida[SSS];
-
-unsigned long valor_ref;
-SoftwareSerial bluetooth = SoftwareSerial(RXPIN, TXPIN);
+int indice;
+int cortina_bajando;
+int cortina_subiendo;
+boolean sigo;
+volatile int estado_final_sup;
+volatile int estado_final_inf;
+int max_iluminacion_deseada;
+int min_iluminacion_deseada;
+int iluminacion_deseada;
+int dato_bt;
+int ilu_recibida;
+int user_red;
+int user_green;
+int user_blue;
+SoftwareSerial bluetooth;
 
 // ------------------------------------------------
 // Funcion para escribir Logs
@@ -301,10 +278,9 @@ void verificar_final_carrera_inf()
 
 void verificar_bluetooth()
 {
-   dato_bt=ZERO;
+  dato_bt = ZERO;
   if (bluetooth.available())
   {
-    
     delay(DY_BT);
     dato_bt = bluetooth.read();
     Serial.println(dato_bt);
@@ -314,8 +290,6 @@ void verificar_bluetooth()
     }
   }
 }
-
-
 
 // ------------------------------------------------
 // Evaluar Informacion recibida
@@ -351,18 +325,15 @@ void evaluar_dato_bluetooth(int dato_bt)
     break;
 
   case SOLICITUD_ENVIAR_ILU_DESEADA:
-   ilu_recibida=obtener_iluminacion_user();
-   Serial.println(ilu_recibida);
-   actualizar_iluminacion_user(ilu_recibida);
-  
- 
+    ilu_recibida = obtener_iluminacion_user();
+    Serial.println(ilu_recibida);
+    actualizar_iluminacion_user(ilu_recibida);
+
     break;
   default:
-
     break;
   }
 }
-
 
 // ------------------------------------------------
 // Manejo de colores de la iluminacion
@@ -399,7 +370,6 @@ void led_blanco_bluetooth()
   set_color(potencia_iluminacion, potencia_iluminacion, potencia_iluminacion);
 }
 
-
 // ------------------------------------------------
 // Setear Iluminacion deseada
 // ------------------------------------------------
@@ -408,28 +378,26 @@ int obtener_iluminacion_user()
 {
 
   static char message[NCHARSBT + ONE];
-   static unsigned int message_pos = ZERO;
+  static unsigned int message_pos = ZERO;
 
-    while (bluetooth.available() > ZERO)
- {
-char inByte = bluetooth.read();
+  while (bluetooth.available() > ZERO)
+  {
+    char inByte = bluetooth.read();
 
-if ( inByte != BN && (message_pos < NCHARSBT ) )
-   {
-   
-     message[message_pos] = inByte;
-     message_pos++;
-   }
+    if (inByte != BN && (message_pos < NCHARSBT) && inByte != FL)
+    {
+
+      message[message_pos] = inByte;
+      message_pos++;
+    }
     else
-   {
-     message[message_pos] = BZERO;
-   }
- }
- message_pos = ZERO;
- int number = atoi(message);
-   return number;
-
-
+    {
+      message[message_pos] = BZERO;
+    }
+  }
+  message_pos = ZERO;
+  int number = atoi(message);
+  return number;
 }
 
 void actualizar_iluminacion_user(int ilu)
@@ -666,59 +634,52 @@ void tomar_evento()
 // ------------------------------------------------
 void carga_inicio()
 {
+  potencia_iluminacion = ZERO;
+  indice = INICIAL_INDICE;
+  cortina_bajando = ZERO;
+  cortina_subiendo = ZERO;
+  sigo = true;
+  estado_final_sup = FINAL_CARRERA_LIBRE;
+  estado_final_inf = FINAL_CARRERA_LIBRE;
+  max_iluminacion_deseada = ZERO;
+  min_iluminacion_deseada = ZERO;
+  iluminacion_deseada = FIFTY;
+  dato_bt = ZERO;
+  ilu_recibida = ZERO;
+  user_red = ZERO;
+  user_green = ZERO;
+  user_blue = ZERO;
   Serial.begin(BAUDIOS);
+  bluetooth = SoftwareSerial(RXPIN, TXPIN);
   bluetooth.begin(BAUDIOS);
-
   pinMode(RXPIN, INPUT);
   pinMode(TXPIN, OUTPUT);
-
-  // Asigno el pin al sensor de luz EXT
   sensor_ext.pin = PIN_LDR_EXT;
   pinMode(sensor_ext.pin, INPUT);
-
-  // Asigno el pin al sensor de luz INT
   sensor_int.pin = PIN_LDR_INT;
   pinMode(sensor_int.pin, INPUT);
-
-  // Asigno el final de carrera superior
   final_carrera_sup.pin = PIN_CARRERA_SUP;
   pinMode(final_carrera_sup.pin, INPUT_PULLUP);
-
-  // Asigno el final de carrera inferior
   final_carrera_inf.pin = PIN_CARRERA_INF;
   pinMode(final_carrera_inf.pin, INPUT_PULLUP);
-
-  // Asigno el pin al actuador led
   actuador_led.pin_r = PIN_LED_R;
   pinMode(actuador_led.pin_r, OUTPUT);
   actuador_led.pin_g = PIN_LED_G;
   pinMode(actuador_led.pin_g, OUTPUT);
   actuador_led.pin_b = PIN_LED_B;
   pinMode(actuador_led.pin_b, OUTPUT);
-
-  // Asigno el pin al actuador motor roller
   actuador_motor.enabled = PIN_E_MOTOR;
   pinMode(actuador_motor.enabled, OUTPUT);
   digitalWrite(actuador_motor.enabled, HIGH);
-
   actuador_motor.pina = PIN_MOTOR_A1;
   pinMode(actuador_motor.pina, OUTPUT);
   actuador_motor.pinb = PIN_MOTOR_A2;
   pinMode(actuador_motor.pinb, OUTPUT);
-
-  // Tomo interrupciones para los finales de carrera
-
   attachInterrupt(digitalPinToInterrupt(final_carrera_sup.pin), parar_roller, RISING);
   attachInterrupt(digitalPinToInterrupt(final_carrera_inf.pin), parar_roller, RISING);
-
-  estado_final_sup = FINAL_CARRERA_LIBRE;
-  estado_final_inf = FINAL_CARRERA_LIBRE;
-
-  // Seteo el estado inicial
   estado_actual = ESTADO_ILUMINADOR_ESPERANDO;
   cortina_bajando = NO;
   cortina_subiendo = NO;
-
   min_iluminacion_deseada = iluminacion_deseada - TEN;
   max_iluminacion_deseada = iluminacion_deseada + TEN;
 }
