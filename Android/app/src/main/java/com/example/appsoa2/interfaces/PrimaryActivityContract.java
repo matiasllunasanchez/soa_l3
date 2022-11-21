@@ -6,15 +6,17 @@ public interface PrimaryActivityContract {
     interface ViewMVP {
         void saveCurrentLightLevel(int i);
         void saveFinalLightLevel(int i);
+        void showResultOnToast(String message);
     }
 
     interface ModelMVP {
         void getReadyBluetooth(PrimaryPresenter presenter);
-        void reconnectBluetoothDevice(String macAddress);
+        void connectBluetoothDevice(String macAddress);
         void sendLevelValueToDevice(int lightValue);
         void getCurrentLightLevel();
         void closeSocket();
          interface OnSendToPresenter {
+             void showOnToast(String message);
         }
     }
 
@@ -22,7 +24,7 @@ public interface PrimaryActivityContract {
         void saveCurrentLight(int i);
         void saveFinalLight(int i);
         void getReadyLogic();
-        void reconnectDevice(String macAddress);
+        void connectDevice(String macAddress);
         void sendLightLevelValue(int lightValue);
         void getCurrentLevelLight();
         void onPauseProcess();

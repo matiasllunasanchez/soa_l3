@@ -112,10 +112,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -130,7 +126,7 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         String address = extras.getString("Direccion_Bluethoot");
         consoleLog("Reconecto dispositivo y seteo color de LED","");
         this.presenter.getReadyLogicAgain(this);
-        this.presenter.reconnectDevice(address);
+        this.presenter.connectDevice(address);
     }
 
     @Override
@@ -144,4 +140,12 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         Log.i(TAG, label + msg);
     }
 
+    public void showResultOnToast(String msg) {
+        consoleLog("Mostrar en toast:", msg);
+        showToast(msg);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
 }

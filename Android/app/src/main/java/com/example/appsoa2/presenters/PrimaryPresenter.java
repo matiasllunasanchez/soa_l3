@@ -30,8 +30,8 @@ public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSend
     }
 
     @Override
-    public void reconnectDevice(String macAddress) {
-        this.model.reconnectBluetoothDevice(macAddress);
+    public void connectDevice(String macAddress) {
+        this.model.connectBluetoothDevice(macAddress);
     }
 
     @Override
@@ -78,6 +78,11 @@ public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSend
     public void onDestroyProcess() {
         this.mainView = null;
         this.model.closeSocket();
+    }
+
+    @Override
+    public void showOnToast(String message) {
+        this.mainView.showResultOnToast(message);
     }
 }
 

@@ -76,6 +76,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
                 int lightValue = Integer.parseInt(String.valueOf(inputTextbox.getText()));
                 presenter.sendLightLevelValue(lightValue);
                 showToast("Luminosidad deseada enviada: "+ String.valueOf(lightValue)+"%");
+                enableButtons();
             }
         });
 
@@ -98,9 +99,11 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
             @Override
             public void onClick(View view) {
                 presenter.getCurrentLevelLight();
+                enableButtons();
             }
         });
-        disableButtons();
+       this.btnSave.setEnabled(false);
+       this.btnBack.setEnabled(true);
     }
 
     private void initializeLabels() {
@@ -162,7 +165,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         seekBarValue.setProgress(Integer.parseInt(String.valueOf(value)));
         this.setLampLevel(value);
         this.txtFinalLightLevel.setText("Luminosidad deseada:");
-        enableButtons();
+        this.btnSave.setEnabled(true);
     }
 
     private void setLampLevel(int value) {
@@ -179,10 +182,6 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         } else {
             this.lampImg.setImageResource(R.drawable.lamp_values);
         }
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -202,7 +201,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String macAddress = extras.getString("Direccion_Bluethoot");
-        this.presenter.reconnectDevice(macAddress);
+        this.presenter.connectDevice(macAddress);
         super.onResume();
     }
 
@@ -218,5 +217,14 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     private void disableButtons(){
         this.btnSave.setEnabled(false);
         this.btnBack.setEnabled(false);
+    }
+
+    public void showResultOnToast(String msg) {
+        consoleLog("Mostrar en toast:", msg);
+        showToast(msg);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

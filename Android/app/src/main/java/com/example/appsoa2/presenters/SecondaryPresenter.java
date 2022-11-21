@@ -26,7 +26,7 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
     @Override
     public void getReadyLogic(Context context) {
         this.model.getReadySensors(context);
-        this.model.getReadyBluetooth(context);
+        this.model.getReadyBluetooth(this);
     }
 
     @Override
@@ -42,12 +42,12 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
 
     @Override
     public void getReadyLogicAgain(Context context) {
-        this.model.reconnectSensors(context);
+        this.model.connectSensors(context);
     }
 
     @Override
-    public void reconnectDevice(String address) {
-        this.model.reconnectBluetoothDevice(address);
+    public void connectDevice(String address) {
+        this.model.connectBluetoothDevice(address);
     }
 
     @Override
@@ -59,6 +59,11 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
     public void handleShakerResult(int value, int codeColor) {
         String hexColor = String.format("#%06X", (0xFFFFFF & value));
         this.mainView.setCurrentColor(value, hexColor, codeColor);
+    }
+
+    @Override
+    public void showOnToast(String message) {
+        this.mainView.showResultOnToast(message);
     }
 
     @Override

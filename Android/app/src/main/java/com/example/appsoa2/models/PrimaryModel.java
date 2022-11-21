@@ -34,15 +34,17 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private int START_INDEX = 0;
     private int NOT_FOUND_INDEX = -1;
     private boolean firstAccess = true;
+    private PrimaryPresenter currentPresenter;
 
     @Override
     public void getReadyBluetooth(PrimaryPresenter presenter) {
+        this.currentPresenter = presenter;
         this.btAdapter = BluetoothAdapter.getDefaultAdapter();
         this.bluetoothIn = bluetoothMessageHandler_PrimaryThread(presenter);
     }
 
     @Override
-    public void reconnectBluetoothDevice(String macAddress) {
+    public void connectBluetoothDevice(String macAddress) {
         btSocket = creationSocketByDevice(macAddress);
         mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
@@ -115,6 +117,7 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 consoleLog("Write a SE con valor:", input);
             } catch (IOException e) {
                 consoleLog("Error al mandar datos al SE:",  e.toString());
+                currentPresenter.showOnToast("Error en envío de datos al SE");
             }
         }
     }

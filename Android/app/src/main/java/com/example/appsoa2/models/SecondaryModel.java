@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.example.appsoa2.interfaces.MainActivityContract;
 import com.example.appsoa2.interfaces.SecondaryActivityContract;
+import com.example.appsoa2.presenters.SecondaryPresenter;
 import com.example.appsoa2.views.SecondaryActivity;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private SecondaryPresenter currentPresenter;
 
     @Override
     public void getReadySensors(Context context) {
@@ -102,18 +104,19 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     }
 
     @Override
-    public void reconnectSensors(Context context) {
+    public void connectSensors(Context context) {
         consoleLog("Intenta reconectar sensores","");
         this.sensorManager.registerListener((SensorEventListener) context, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
-    public void getReadyBluetooth(Context context) {
+    public void getReadyBluetooth(SecondaryPresenter presenter) {
+        this.currentPresenter = presenter;
         this.btAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     @Override
-    public void reconnectBluetoothDevice(String address) {
+    public void connectBluetoothDevice(String address) {
         btSocket = creationSocketByDevice(address);
         mConnectedThread = new SecondaryModel.ConnectedThread(btSocket);
         mConnectedThread.start();
@@ -165,6 +168,9 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             }
             mmOutStream = tmpOut;
         }
+        public void run() {
+
+        }
 
         public void write(String input) {
             Log.i(TAG, "Write con color: " + input);
@@ -174,6 +180,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) {
                 consoleLog("Excepcion al enviar write al SE:", e.toString());
+                currentPresenter.showOnToast("Error en envío de datos al SE");
             }
         }
     }
