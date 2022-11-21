@@ -1,0 +1,82 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondov2"
+    android:configChanges="orientation|keyboardHidden|screenSize"
+    android:screenOrientation="portrait">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="203dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="331dp"
+        android:background="#5C3A3A3A"
+        android:padding="10dp"
+        android:text="Bienvenido."
+        android:textColor="#DCFFFE"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_secondary"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.512" />
+
+    <TextView
+        android:id="@+id/txtEstado"
+        android:layout_width="0dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="362dp"
+        android:background="#9CFFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:padding="15dp"
+        android:text="Esperá..."
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_secondary"
+        android:layout_width="276dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="71dp"
+        android:backgroundTint="#797ae4"
+        android:padding="20dp"
+        android:shadowColor="#474747"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:shadowRadius="10.0"
+        android:text="AJUSTAR COLOR"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtEstado" />
+
+    <Button
+        android:id="@+id/button_primary"
+        android:layout_width="279dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#1f4766"
+        android:padding="20dp"
+        android:shadowColor="#323232"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:shadowRadius="10.0"
+        android:text="AJUSTAR ILUMINACION"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_secondary" />
+
+</android.support.constraint.ConstraintLayout>
