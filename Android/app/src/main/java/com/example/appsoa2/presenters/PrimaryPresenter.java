@@ -4,7 +4,7 @@ import com.example.appsoa2.interfaces.BasePresenter;
 import com.example.appsoa2.interfaces.PrimaryActivityContract;
 import com.example.appsoa2.models.PrimaryModel;
 
-public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSendToPresenter, PrimaryActivityContract.PresenterMVP, BasePresenter {
+public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSendToPresenter, PrimaryActivityContract.PresenterMVP {
 
     private PrimaryActivityContract.ViewMVP mainView;
     private final PrimaryActivityContract.ModelMVP model;
@@ -78,11 +78,6 @@ public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSend
     public void onDestroyProcess() {
         this.mainView = null;
         this.model.closeSocket();
-    }
-
-    @Override
-    public void consoleLog(String label, String msg) {
-    this.mainView.consoleLog(label,msg);
     }
 }
 

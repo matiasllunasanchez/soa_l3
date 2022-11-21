@@ -27,7 +27,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
 
     private Button btnBack;
     private TextView txtColorSelected;
-    private ImageView imgCurrentLed;
     private static final String RED_COLOR_HEX = "#FF0000";
     private static final String GREEN_COLOR_HEX = "#00FF00";
     private static final String BLUE_COLOR_HEX = "0000FF";

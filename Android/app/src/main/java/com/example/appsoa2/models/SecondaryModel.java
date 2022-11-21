@@ -91,7 +91,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         try {
             btSocket.close();
         } catch (IOException e2) {
-            Log.i(TAG, "Excepcion al intentar cerrar socket de BT" + e2);
+            consoleLog("Excepcion al intentar cerrar socket de BT", e2.toString());
         }
     }
 
@@ -159,7 +159,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.i(TAG, "Error al conectar thread: " + e);
+                consoleLog("Excepcion al obtener lectura del SE:", e.toString());
             }
             mmOutStream = tmpOut;
         }
@@ -171,7 +171,7 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             try {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) {
-                Log.i(TAG, "Excepcion: Al mandar datos al SE: " + e);
+                consoleLog("Excepcion al enviar write al SE:", e.toString());
             }
         }
     }
@@ -182,12 +182,13 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();
-            Log.i("[BLUETOOTH]", "Connected to: " + device.getName());
+            consoleLog("[BLUETOOTH] conectado a:", device.getName());
         } catch (IOException e) {
+            consoleLog("Excepcion al conectar el socket:", e.toString());
             try {
                 socketResult.close();
             } catch (IOException c) {
-                Log.i(TAG, "Excepcion  " + e);
+                consoleLog("Excepcion al cerrar socket:", c.toString());
                 return socketResult;
             }
         }
@@ -200,7 +201,11 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
         {
             btSocket.close();
         } catch (IOException e2) {
-            Log.i(TAG, "Excepcion  " + e2);
+            consoleLog("Excepcion al cerrar socket:", e2.toString());
         }
+    }
+
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label + data);
     }
 }

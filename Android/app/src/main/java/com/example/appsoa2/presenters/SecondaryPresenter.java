@@ -97,9 +97,5 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
         this.model.closeSocket();
     }
 
-    @Override
-    public void consoleLog(String label, String msg) {
-        this.mainView.consoleLog(label,msg);
-    }
 }
 

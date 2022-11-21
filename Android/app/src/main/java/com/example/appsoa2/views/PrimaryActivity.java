@@ -87,6 +87,7 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
                     startActivity(k);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    consoleLog("Excepcion al clickear en volver:", e.toString());
                 }
             }
         });
@@ -158,12 +159,6 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         this.setLampLevel(value);
     }
 
-
-    @Override
-    public void consoleLog(String label, String msg) {
-        Log.i(TAG, label + msg);
-    }
-
     private void setLampLevel(int value) {
         if (value > EMPTY_LIGHT_VALUE) {
             if (value > MIN_LIGHT_VALUE) {
@@ -204,6 +199,10 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
         Bundle extras = intent.getExtras();
         String macAddress = extras.getString("Direccion_Bluethoot");
         this.presenter.reconnectDevice(macAddress);
+    }
+
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label +" "+ data);
     }
 
 }

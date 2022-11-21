@@ -47,11 +47,6 @@ public class MainPresenter implements MainActivityContract.ModelMVP.OnSendToPres
     }
 
     @Override
-    public void consoleLog(String label, String msg) {
-    this.mainView.consoleLog(label,msg);
-    }
-
-    @Override
     public void disableButtons() {
         this.mainView.disableButtons();
     }

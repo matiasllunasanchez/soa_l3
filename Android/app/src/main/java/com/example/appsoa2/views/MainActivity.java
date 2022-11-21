@@ -42,8 +42,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
     private MainActivityContract.PresenterMVP presenter;
     private static final String TAG = "MainActivity";
-    private TextView textView;
-
     private TextView txtEstado;
     private ProgressDialog mProgressDlg;
     Button btnPrimary;
@@ -67,8 +65,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
         btnPrimary.setOnClickListener(this.btnListener);
         btnSecondary.setOnClickListener(this.btnListener);
-
-        this.textView = this.findViewById(R.id.textView);
         this.presenter = new MainPresenter(this);
         this.txtEstado = (TextView) findViewById(R.id.txtEstado);
 
@@ -84,7 +80,7 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
             String address = presenter.getConnectedDeviceAddress();
             switch (view.getId()) {
                 case R.id.button_primary:
-                    Log.i(TAG, "Ir a pantalla primaria / ILUMINACION");
+                    consoleLog("Ir a pantalla primaria / ILUMINACION","");
                     try {
                         if (address != null) {
                             Intent k = new Intent(MainActivity.this, PrimaryActivity.class);
@@ -96,7 +92,7 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
                     }
                     break;
                 case R.id.button_secondary:
-                    Log.i(TAG, "Ir a pantalla secundaria / COLOR ");
+                    consoleLog("Ir a pantalla secundaria / COLOR","");
                     try {
                         if (address != null) {
                             Intent k = new Intent(MainActivity.this, SecondaryActivity.class);
@@ -105,10 +101,10 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        consoleLog("Excepcion", e.toString());
                     }
                     break;
                 default:
-                    Log.i(TAG, "Default de switch botones ");
                     throw new IllegalStateException("Unexpected value " + view.getId());
             }
         }
@@ -143,7 +139,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
                     for (String per : permissions) {
                         perStr += "\n" + per;
                     }
-                    // permissions list of don't granted permission
                     Toast.makeText(this, "Esta aplicación requiere de la aceptación de todos los permisos para funcionar correctamente.", Toast.LENGTH_LONG).show();
                 }
                 return;
@@ -168,13 +163,13 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
     @Override
     public void showResultOnToast(String msg) {
-        Log.i(TAG, "Mostrar en toast: " + msg);
+        consoleLog("Mostrar en toast:", msg);
         showToast(msg);
     }
 
     @Override
     public void showResultOnLabel(String msg) {
-        consoleLog("Mostrar en label: ", msg);
+        consoleLog("Mostrar en label:", msg);
         this.txtEstado.setText(msg);
     }
 
@@ -188,8 +183,8 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
         mProgressDlg.show();
     }
 
-    public void consoleLog(String label, String data) {
-        Log.i(TAG, label + data);
+    private void consoleLog(String label, String data) {
+        Log.i(TAG, label +" "+ data);
     }
 
     @Override
@@ -203,6 +198,5 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
         btnPrimary.setEnabled(true);
         btnSecondary.setEnabled(true);
     }
-
 }
 
