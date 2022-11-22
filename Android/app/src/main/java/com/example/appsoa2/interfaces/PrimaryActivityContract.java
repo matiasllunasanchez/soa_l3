@@ -31,6 +31,5 @@ public interface PrimaryActivityContract {
         void connectDevice(String macAddress);
         void sendLightLevelValue(int lightValue);
         void getCurrentLevelLight();
-        void onPauseProcess();
     }
 }

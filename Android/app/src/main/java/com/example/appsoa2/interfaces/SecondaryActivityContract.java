@@ -24,7 +24,9 @@ public interface SecondaryActivityContract {
         void sendLedColorValue(String valueOf);
         void closeSocket();
         void generateColor(OnSendToPresenter presenter);
-
+        void unpauseThread();
+        void pauseThread();
+        void closeThread();
         interface OnSendToPresenter {
             void handleShakerResult(int resultColor, int value);
             void showOnToast(String message);
@@ -39,6 +41,5 @@ public interface SecondaryActivityContract {
         void getReadyLogicAgain(Context context);
         void connectDevice(String address);
         void sendColorToDevice(String valueOf);
-        void onDestroyProcess();
     }
 }

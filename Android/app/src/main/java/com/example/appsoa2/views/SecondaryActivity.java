@@ -115,7 +115,7 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
     @Override
     public void onPause() {
         super.onPause();
-        this.presenter.safeDisconnect(this);
+        this.presenter.onPauseProcess();
     }
 
     @Override
@@ -125,8 +125,8 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         Bundle extras = intent.getExtras();
         String address = extras.getString("Direccion_Bluethoot");
         consoleLog("Reconecto dispositivo y seteo color de LED","");
-        this.presenter.getReadyLogicAgain(this);
         this.presenter.connectDevice(address);
+        this.presenter.onResumeProcess();
     }
 
     @Override

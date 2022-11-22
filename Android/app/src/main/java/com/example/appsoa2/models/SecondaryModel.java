@@ -56,6 +56,15 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothSocket btSocket = null;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private SecondaryPresenter currentPresenter;
+    private Object pauseLock;
+    private boolean paused;
+    private boolean finished;
+
+    public SecondaryModel(){
+        this.pauseLock = new Object();
+        this.paused = false;
+        this.finished = false;
+    }
 
     @Override
     public void getReadySensors(Context context) {
@@ -169,7 +178,16 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
             mmOutStream = tmpOut;
         }
         public void run() {
-
+                synchronized (pauseLock) {
+                    while (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (
+                                InterruptedException e) {
+                            break;
+                        }
+                    }
+                }
         }
 
         public void write(String input) {
@@ -217,5 +235,25 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
 
     private void consoleLog(String label, String data) {
         Log.i(TAG, label + data);
+    }
+
+       @Override
+    public void unpauseThread() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
+        }
+    }
+
+    @Override
+    public void pauseThread() {
+        synchronized (pauseLock) {
+            paused = true;
+        }
+    }
+
+    @Override
+    public void closeThread() {
+        finished = true;
     }
 }

@@ -76,24 +76,28 @@ public class SecondaryPresenter implements SecondaryActivityContract.ModelMVP.On
 
     }
 
-    @Override
-    public void onResumeProcess() {
-
-    }
-
-    @Override
-    public void onPauseProcess() {
-
-    }
-
-    @Override
-    public void onStopProcess() {
-
-    }
 
     @Override
     public void onRestartProcess() {
 
+    }
+
+     @Override
+    public void onResumeProcess() {
+        getReadyLogicAgain((Context) this.mainView);
+        this.model.unpauseThread();
+    }
+
+    @Override
+    public void onPauseProcess() {
+        safeDisconnect((Context) this.mainView);
+        this.model.pauseThread();
+    }
+
+    @Override
+    public void onStopProcess() {
+        this.model.closeThread();
+        this.model.closeSocket();
     }
 
     @Override
