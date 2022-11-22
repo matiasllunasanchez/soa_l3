@@ -15,7 +15,11 @@ public interface PrimaryActivityContract {
         void sendLevelValueToDevice(int lightValue);
         void getCurrentLightLevel();
         void closeSocket();
-         interface OnSendToPresenter {
+        void unpauseThread();
+        void pauseThread();
+        void closeThread();
+
+        interface OnSendToPresenter {
              void showOnToast(String message);
         }
     }

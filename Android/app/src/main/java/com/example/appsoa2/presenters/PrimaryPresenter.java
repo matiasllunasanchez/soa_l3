@@ -56,17 +56,19 @@ public class PrimaryPresenter implements PrimaryActivityContract.ModelMVP.OnSend
 
     @Override
     public void onResumeProcess() {
-
+        this.model.unpauseThread();
     }
 
     @Override
     public void onPauseProcess() {
+        this.model.pauseThread();
         this.model.closeSocket();
     }
 
     @Override
     public void onStopProcess() {
-
+        this.model.closeThread();
+        this.model.closeSocket();
     }
 
     @Override

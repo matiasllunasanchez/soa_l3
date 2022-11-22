@@ -34,7 +34,17 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private int START_INDEX = 0;
     private int NOT_FOUND_INDEX = -1;
     private boolean firstAccess = true;
+
     private PrimaryPresenter currentPresenter;
+    private Object pauseLock;
+    private boolean paused;
+    private boolean finished;
+
+    public PrimaryModel(){
+        this.pauseLock = new Object();
+        this.paused = false;
+        this.finished = false;
+    }
 
     @Override
     public void getReadyBluetooth(PrimaryPresenter presenter) {
@@ -75,6 +85,26 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
         }
     }
 
+    @Override
+    public void unpauseThread() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
+        }
+    }
+
+    @Override
+    public void pauseThread() {
+        synchronized (pauseLock) {
+            paused = true;
+        }
+    }
+
+    @Override
+    public void closeThread() {
+        finished = true;
+    }
+
     private class ConnectedThread extends Thread {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
@@ -97,7 +127,9 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             byte[] buffer = new byte[256];
             int bytes;
 
-            while (true) {
+            while (!finished) {
+
+
                 try {
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, START_INDEX, bytes);
@@ -106,6 +138,17 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 } catch (IOException e) {
                     consoleLog("Error en lectura de caracter recibido / buffer:",  e.toString());
                     break;
+                }
+
+                synchronized (pauseLock) {
+                    while (paused) {
+                        try {
+                            pauseLock.wait();
+                        } catch (
+                                InterruptedException e) {
+                            break;
+                        }
+                    }
                 }
             }
         }
