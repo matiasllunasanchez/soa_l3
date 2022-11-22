@@ -8,3 +8,6 @@ Comandos aceptados por el SE:
     5# Set LED Azul
     6# Set LED Blanco
     9XX# Set Iluminación deseada con XX
+
+
+### Repositorio previo: https://github.com/matiasllunasanchez/soa_2022_l3
