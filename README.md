@@ -21,3 +21,7 @@ Los colores estan limitados en ROJO, BLANCO, VERDE y AZUL.
 
 
 Todas las pantallas cuentan con una imagen descriptiva de la acción realizada representada por una lamparita, siendo esta intensidad luminica representada por los rayitos alrededor de la lampara y en la segunda pantalla el color del led afectando literalmente a la imagen de la lampara.
+
+### Repositorios previos
+#### Android: https://github.com/matiasllunasanchez/soa_2022_android_l3
+#### Arduino: https://github.com/matiasllunasanchez/soa_2022_l3
