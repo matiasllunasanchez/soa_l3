@@ -12,3 +12,6 @@ Es la pantalla referida al seteo de la iluminacion deseada en la habitación. Co
 Es la pantalla referida al cambio de color de led y la utilización del sensor acerelometro del dispositivo para detectar un efecto "shake" y cambiar aleatoriamente el color el cual se envia hacia el dispositivo por BT.
 
 Todas las pantallas cuentan con una imagen descriptiva de la acción realizada, siendo la intensidad luminica representada por los rayitos alrededor de la lampara y en la segunda pantalla el color del led afectando literalmente a la imagen de la lampara.
+
+### Repositorio previo: https://github.com/matiasllunasanchez/soa_2022_android_l3
+
