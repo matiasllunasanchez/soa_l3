@@ -169,7 +169,7 @@ public class MainModel implements MainActivityContract.ModelMVP {
             } else if (state == BluetoothAdapter.STATE_OFF) {
                 this.currentPresenter.showOnLabel("Habilita el bluetooth para continuar...");
                 this.currentPresenter.disableButtons();
-                this.currentPresenter.askBTPermission(); // Revisar si vale la pena
+                this.currentPresenter.askBTPermission();
             }
         } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             this.currentPresenter.showLoadingDialog();
