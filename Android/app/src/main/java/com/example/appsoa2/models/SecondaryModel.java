@@ -114,7 +114,6 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
 
     @Override
     public void connectSensors(Context context) {
-        consoleLog("Intenta reconectar sensores","");
         this.sensorManager.registerListener((SensorEventListener) context, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -206,11 +205,9 @@ public class SecondaryModel implements SecondaryActivityContract.ModelMVP {
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
-        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();
-            consoleLog("[BLUETOOTH] conectado a:", device.getName());
         } catch (IOException e) {
             consoleLog("Excepcion al conectar el socket:", e.toString());
             try {

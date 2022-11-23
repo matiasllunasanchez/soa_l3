@@ -58,7 +58,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
         btSocket = creationSocketByDevice(macAddress);
         mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
-        consoleLog("Thread iniciado:", mConnectedThread.toString());
         mConnectedThread.write(GET_FINAL_LIGHT_LEVEL + EOF_SEND_MARK_SE);
     }
 
@@ -66,7 +65,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     public void sendLevelValueToDevice(int lightValue) {
         int lightResultValue = lightValue >= MAX_VALUE_LIGHT_LEVEL ? MAX_VALUE_LIGHT_LEVEL : Math.max(lightValue, MIN_VALUE_LIGHT_LEVEL);
         String lightLevelResult = String.valueOf(lightResultValue);
-        consoleLog("Luminosidad enviada al SE:", lightLevelResult.toString());
         mConnectedThread.write(START_SEND_MARK_SE + lightLevelResult + EOF_SEND_MARK_SE);
     }
 
@@ -133,7 +131,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
                 try {
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, START_INDEX, bytes);
-                    consoleLog("Read de buffer:  ", readMessage);
                     bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
                 } catch (IOException e) {
                     consoleLog("Error en lectura de caracter recibido / buffer:",  e.toString());
@@ -157,7 +154,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             byte[] msgBuffer = input.getBytes();
             try {
                 mmOutStream.write(msgBuffer);
-                consoleLog("Write a SE con valor:", input);
             } catch (IOException e) {
                 consoleLog("Error al mandar datos al SE:",  e.toString());
                 currentPresenter.showOnToast("Error en envío de datos al SE");
@@ -185,7 +181,6 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
             @SuppressLint("HandlerLeak")
             public void handleMessage(android.os.Message msg) {
 
-                consoleLog("Se recibio un dato desde el SE:",  msg.obj.toString());
                 if (msg.what == handlerState) {
                     String readMessage = (String) msg.obj;
                     boolean isNumber = isNumericOrEOF(readMessage);
@@ -216,11 +211,9 @@ public class PrimaryModel implements PrimaryActivityContract.ModelMVP {
     private BluetoothSocket creationSocketByDevice(String address) {
         BluetoothSocket socketResult = null;
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
-        consoleLog("La address recibida",address);
         try {
             socketResult = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
             socketResult.connect();
-            consoleLog("[BLUETOOTH] conectado a:", device.getName());
         } catch (IOException e) {
             try {
                 socketResult.close();

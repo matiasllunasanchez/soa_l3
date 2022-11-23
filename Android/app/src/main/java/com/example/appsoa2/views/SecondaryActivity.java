@@ -124,7 +124,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         String address = extras.getString("Direccion_Bluethoot");
-        consoleLog("Reconecto dispositivo y seteo color de LED","");
         this.presenter.connectDevice(address);
         this.presenter.onResumeProcess();
     }
@@ -141,7 +140,6 @@ public class SecondaryActivity extends Activity implements SecondaryActivityCont
     }
 
     public void showResultOnToast(String msg) {
-        consoleLog("Mostrar en toast:", msg);
         showToast(msg);
     }
 

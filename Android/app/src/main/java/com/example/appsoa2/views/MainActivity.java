@@ -86,7 +86,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
             String address = presenter.getConnectedDeviceAddress();
             switch (view.getId()) {
                 case R.id.button_primary:
-                    consoleLog("Ir a pantalla primaria / ILUMINACION","");
                     try {
                         if (address != null) {
                             btnPrimary.setEnabled(false);
@@ -102,7 +101,6 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
                     }
                     break;
                 case R.id.button_secondary:
-                    consoleLog("Ir a pantalla secundaria / COLOR","");
                     try {
                         if (address != null) {
                             btnSecondary.setEnabled(false);
@@ -176,13 +174,11 @@ public class MainActivity extends Activity implements MainActivityContract.ViewM
 
     @Override
     public void showResultOnToast(String msg) {
-        consoleLog("Mostrar en toast:", msg);
         showToast(msg);
     }
 
     @Override
     public void showResultOnLabel(String msg) {
-        consoleLog("Mostrar en label:", msg);
         this.txtEstado.setText(msg);
     }
 

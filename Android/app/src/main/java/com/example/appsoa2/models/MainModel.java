@@ -128,7 +128,6 @@ public class MainModel implements MainActivityContract.ModelMVP {
         } else {
             if (mBluetoothAdapter.isEnabled()) {
                 response = "Bluetooth ya encendido!!";
-                consoleLog(response,"");
                 if (!primaryDeviceIsAlreadyConnected()) {
                     searchBluetoothDevices();
                 }

@@ -220,7 +220,6 @@ public class PrimaryActivity extends Activity implements PrimaryActivityContract
     }
 
     public void showResultOnToast(String msg) {
-        consoleLog("Mostrar en toast:", msg);
         showToast(msg);
     }
 
