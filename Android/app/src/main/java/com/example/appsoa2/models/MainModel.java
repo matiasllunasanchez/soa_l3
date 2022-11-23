@@ -144,11 +144,11 @@ public class MainModel implements MainActivityContract.ModelMVP {
     private void initializeBroadcastReceiver(Context context) {
         IntentFilter filter = new IntentFilter();
 
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED); // Cambia el estado del Bluethoot (Activando /Desactivado)
-        filter.addAction(BluetoothDevice.ACTION_FOUND); // Se encuentra un dispositivo bluethoot al realizar una busqueda
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED); // Cuando se comienza una busqueda de bluethoot
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED); // Cuando la busqueda de bluethoot finaliza
-        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED); // Cuando se empareja o desempareja el bluethoot
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         context.registerReceiver(mReceiver, filter);
     }
 
